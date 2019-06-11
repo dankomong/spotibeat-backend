@@ -2,6 +2,8 @@ class User < ApplicationRecord
   has_many :user_tracks, dependent: :destroy
   has_many :tracks, through: :user_tracks
 
+  has_many :reviews
+
   has_many :artists, through: :tracks
 
   has_many :genres, through: :artists
@@ -38,6 +40,14 @@ class User < ApplicationRecord
 
   def get_recently_played
     SpotifyApiAdapter.get_recently_played(self)
+  end
+
+  # def get_top_tracks
+  #   SpotifyApiAdapter.get_top_tracks(self)
+  # end
+
+  def get_recommendations
+    SpotifyApiAdapter.get_recommendations(self)
   end
 
 end

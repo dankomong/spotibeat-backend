@@ -53,6 +53,8 @@ class SpotifyApiAdapter
           )
         end
 
+        album.tracks << track
+
         # now taking in account of multiple artists on a song
         song["track"]["artists"].each do |artist|
 
@@ -65,46 +67,56 @@ class SpotifyApiAdapter
 
           # putting into account if there were no images for the artist bc there isnt an image
           # for every artist on the spotify api right now.
+          artistFound = Artist.find_by(name: artist["name"])
           if artist_response["images"].length == 3
-            artist = Artist.find_or_create_by(
-              name: artist["name"],
-              spotify_url: artist["external_urls"]["spotify"],
-              href: artist["href"],
-              uri: artist["uri"],
-              image_url_small: artist_response["images"][2]["url"],
-              image_url_medium: artist_response["images"][1]["url"],
-              image_url_large: artist_response["images"][0]["url"]
-            )
+            if !artistFound
+              artistFound = Artist.create(
+                name: artist["name"],
+                spotify_url: artist["external_urls"]["spotify"],
+                href: artist["href"],
+                uri: artist["uri"],
+                image_url_small: artist_response["images"][2]["url"],
+                image_url_medium: artist_response["images"][1]["url"],
+                image_url_large: artist_response["images"][0]["url"]
+              )
+            end
           elsif artist_response["images"].length == 2
-            artist = Artist.find_or_create_by(
-              name: artist["name"],
-              spotify_url: artist["external_urls"]["spotify"],
-              href: artist["href"],
-              uri: artist["uri"],
-              image_url_small: artist_response["images"][1]["url"],
-              image_url_medium: artist_response["images"][0]["url"],
-              image_url_large: ""
-            )
+            if !artistFound
+              artistFound = Artist.create(
+                name: artist["name"],
+                spotify_url: artist["external_urls"]["spotify"],
+                href: artist["href"],
+                uri: artist["uri"],
+                image_url_small: artist_response["images"][1]["url"],
+                image_url_medium: artist_response["images"][0]["url"],
+                image_url_large: ""
+              )
+            end
           else
-            artist = Artist.find_or_create_by(
-              name: artist["name"],
-              spotify_url: artist["external_urls"]["spotify"],
-              href: artist["href"],
-              uri: artist["uri"],
-              image_url_small: "",
-              image_url_medium: "",
-              image_url_large: ""
-            )
+            if !artistFound
+              artistFound = Artist.create(
+                name: artist["name"],
+                spotify_url: artist["external_urls"]["spotify"],
+                href: artist["href"],
+                uri: artist["uri"],
+                image_url_small: "",
+                image_url_medium: "",
+                image_url_large: ""
+              )
+            end
           end
 
-          artist_response["genres"].each do |genre|
-            genre = Genre.find_or_create_by(
-              name: genre
-            )
-            artist.genres << genre
+          artist_response["genres"].each do |genre1|
+            genre = Genre.find_by(name: genre1)
+            if !genre
+              genre = Genre.find_or_create_by(
+                name: genre1
+              )
+              artistFound.genres << genre
+            end
           end
 
-          track.artists << artist
+          track.artists << artistFound
         end
 
         # user.tracks << track
@@ -130,7 +142,37 @@ class SpotifyApiAdapter
     url = "#{initial_url}?#{query_params.to_query}"
 
     response = JSON.parse(RestClient.get(url, header))
-    
+
+  end
+
+  def self.get_top_tracks(user)
+    user.refresh_token
+    initial_url = "https://api.spotify.com/v1/me/top/tracks"
+
+    header = {
+      Authorization: "Bearer #{user.access_token}"
+    }
+
+    query_params = {
+     limit: 50
+    }
+    url = "#{initial_url}?#{query_params.to_query}"
+    response = JSON.parse(RestClient.get(url, header))
+  end
+
+  def self.get_recommendations(user)
+    user.refresh_token
+    initial_url = "https://api.spotify.com/v1/recommendations"
+
+    header = {
+      Authorization: "Bearer #{user.access_token}"
+    }
+
+    query_params = {
+     limit: 30
+    }
+    url = "#{initial_url}?#{query_params.to_query}"
+    response = JSON.parse(RestClient.get(url, header))
   end
 
 

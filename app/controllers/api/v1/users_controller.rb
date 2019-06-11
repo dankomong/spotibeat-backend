@@ -52,19 +52,20 @@ class Api::V1::UsersController < ApplicationController
     render json: {token: @user.access_token, user: UserSerializer.new(@user)}
   end
 
-  def show
-    # render json: {
-    #   username: current_user.username,
-    #   spotify_url: current_user.spotify_url,
-    #   profile_img_url: current_user.profile_img_url
-    # }
+  def get_genres_and_artists_unique
+    genres = Genre.all
+    artists = Artist.all
+    render json: {genres: genres, artists: artists}
   end
 
   def get_library
     # separate method on user model
     # just runs once (for now) to seed the data into the database
     current_user.get_library
+  end
 
+  def get_recommendations
+    current_user.get_recommendations
   end
 
 

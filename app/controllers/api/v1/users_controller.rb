@@ -6,7 +6,7 @@ class Api::V1::UsersController < ApplicationController
       response_type: "code",
       client_id: ENV['CLIENT_ID'],
       redirect_uri: ENV['REDIRECT_URI'],
-      scope: "user-library-read user-library-modify user-read-recently-played user-modify-playback-state playlist-modify-public",
+      scope: "user-library-read user-library-modify user-read-recently-played user-modify-playback-state playlist-modify-public streaming user-read-birthdate user-read-email user-read-private",
       show_dialog: true
     }
     redirect_to "#{url}?#{query_params.to_query}"

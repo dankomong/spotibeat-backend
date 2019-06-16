@@ -7,6 +7,8 @@ class Track < ApplicationRecord
 
   has_many :reviews
 
+  has_many :genres, through: :artists
+
   belongs_to :album
-  
+
 end

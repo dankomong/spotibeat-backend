@@ -169,6 +169,23 @@ class SpotifyApiAdapter
     }
 
     query_params = {
+     limit: 30,
+     seed_artists: "4NHQUGzhtTLFvgF5SZesLK",
+     seed_tracks: "0c6xIDDpzE81m2q797ordA"
+    }
+    url = "#{initial_url}?#{query_params.to_query}"
+    response = JSON.parse(RestClient.get(url, header))
+  end
+
+  def self.get_new_releases(user)
+    user.refresh_token
+    initial_url = "https://api.spotify.com/v1/browse/new-releases"
+
+    header = {
+      Authorization: "Bearer #{user.access_token}"
+    }
+
+    query_params = {
      limit: 30
     }
     url = "#{initial_url}?#{query_params.to_query}"

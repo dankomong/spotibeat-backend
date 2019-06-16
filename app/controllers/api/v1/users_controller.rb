@@ -55,7 +55,7 @@ class Api::V1::UsersController < ApplicationController
   def get_genres_and_artists_unique
     genres = Genre.all
     artists = Artist.all
-    render json: {genres: genres, artists: artists.map{|artist| ArtistSerializer.new(artist)} }
+    render json: {genres: genres.map{|genre| GenreSerializer.new(genre)}, artists: artists.map{|artist| ArtistSerializer.new(artist)} }
   end
 
   def get_library
@@ -65,7 +65,7 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def get_recommendations
-    current_user.get_recommendations
+    render json: current_user.get_recommendations
   end
 
 

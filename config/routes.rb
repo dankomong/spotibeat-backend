@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       get '/recommendations', to: "users#get_recommendations"
       get '/reviews', to: "reviews#index"
       post '/review', to: "reviews#create"
+      get '/get-new-releases', to: "tracks#get_new_releases"
     end
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html

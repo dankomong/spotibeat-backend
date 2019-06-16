@@ -50,4 +50,8 @@ class User < ApplicationRecord
     SpotifyApiAdapter.get_recommendations(self)
   end
 
+  def get_new_releases
+    SpotifyApiAdapter.get_new_releases(self)
+  end
+
 end

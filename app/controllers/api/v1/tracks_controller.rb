@@ -19,4 +19,8 @@ class Api::V1::TracksController < ApplicationController
     render json: {tracks: current_user.tracks.map{|t| TrackSerializer.new(t)}, recent_tracks: current_user.get_recently_played}
   end
 
+  def get_new_releases
+    render json: current_user.get_new_releases
+  end
+
 end

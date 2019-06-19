@@ -1,12 +1,12 @@
 class User < ApplicationRecord
   has_many :user_tracks, dependent: :destroy
-  has_many :tracks, through: :user_tracks
+  has_many :tracks,  -> { distinct }, through: :user_tracks
 
   has_many :reviews
 
-  has_many :artists, through: :tracks
+  has_many :artists, -> { distinct }, through: :tracks
 
-  has_many :genres, through: :artists
+  has_many :genres, -> { distinct }, through: :artists
 
   def access_token_expired?
     #return true if access_token is older than 55 minutes, based on update_at
@@ -52,6 +52,14 @@ class User < ApplicationRecord
 
   def get_new_releases
     SpotifyApiAdapter.get_new_releases(self)
+  end
+
+  def remove_track(id)
+    SpotifyApiAdapter.remove_track(self, id)
+  end
+
+  def get_featured_playlists
+    SpotifyApiAdapter.get_featured_playlists(self)
   end
 
 end

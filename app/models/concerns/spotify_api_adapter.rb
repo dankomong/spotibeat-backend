@@ -192,5 +192,33 @@ class SpotifyApiAdapter
     response = JSON.parse(RestClient.get(url, header))
   end
 
+  def self.remove_track(user, id)
+    user.refresh_token
+    initial_url = "https://api.spotify.com/v1/me/tracks"
+    header = {
+      Authorization: "Bearer #{user.access_token}"
+    }
+
+    query_params = {
+     ids: id
+    }
+    url = "#{initial_url}?#{query_params.to_query}"
+    RestClient.delete(url, header)
+  end
+
+  def self.get_featured_playlists(user)
+    user.refresh_token
+    initial_url = "https://api.spotify.com/v1/browse/featured-playlists"
+    header = {
+      Authorization: "Bearer #{user.access_token}"
+    }
+
+    query_params = {
+     limit: 30
+    }
+
+    url = "#{initial_url}?#{query_params.to_query}"
+    response = JSON.parse(RestClient.get(url, header))
+  end
 
 end

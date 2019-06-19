@@ -23,4 +23,18 @@ class Api::V1::TracksController < ApplicationController
     render json: current_user.get_new_releases
   end
 
+  def remove_track
+    spotify_id = request.headers[:id]
+    track = Track.find_by(spotify_id: spotify_id)
+    user_track = UserTrack.find_by(user_id: current_user.id, track_id: track.id)
+    if user_track.destroy
+      # delete from spotify as well
+      current_user.remove_track(spotify_id)
+
+      render json: {success: "Successfully deleted"}
+    else
+      render json: {error: 'Failed to delete'}, status: :not_acceptable
+    end
+  end
+
 end

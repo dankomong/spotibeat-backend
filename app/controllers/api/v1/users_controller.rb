@@ -52,10 +52,12 @@ class Api::V1::UsersController < ApplicationController
     render json: {token: @user.access_token, user: UserSerializer.new(@user)}
   end
 
-  def get_genres_and_artists_unique
-    genres = Genre.all
-    artists = Artist.all
-    render json: {genres: genres.map{|genre| GenreSerializer.new(genre)}, artists: artists.map{|artist| ArtistSerializer.new(artist)} }
+  def get_tracks_genres_and_artists_unique
+    tracks = current_user.tracks
+    genres = current_user.genres
+    artists = current_user.artists
+    recent_tracks = current_user.get_recently_played
+    render json: {tracks: tracks.map{|t| TrackSerializer.new(t)}, recent_tracks: recent_tracks, genres: genres.map{|genre| GenreSerializer.new(genre)}, artists: artists.map{|artist| ArtistSerializer.new(artist)} }
   end
 
   def get_library
@@ -66,6 +68,11 @@ class Api::V1::UsersController < ApplicationController
 
   def get_recommendations
     render json: current_user.get_recommendations
+  end
+
+  def get_playlists
+    playlists = current_user.get_featured_playlists
+    render json: {playlists: playlists}
   end
 
 
